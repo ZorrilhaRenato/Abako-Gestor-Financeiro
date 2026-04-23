@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abako Gestão - Fluxo de Caixa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #f8fafc;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        /* Ajuste para botões de exclusão em dispositivos touch */
+        @media (max-width: 1024px) {
+            .delete-btn { opacity: 1 !important; }
+        }
+        .transaction-card:hover .delete-btn { opacity: 1; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
+</head>
+<body class="text-slate-900 antialiased">
+
+    <nav class="sticky top-0 z-50 glass-effect px-4 md:px-8 py-3 md:py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2 md:gap-3">
+                <div class="w-9 h-9 md:w-11 md:h-11 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-100">
+                    <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <span class="text-lg md:text-2xl font-800 tracking-tight text-slate-800">Abako<span class="text-indigo-600">Gestão</span> - Fuxo de Caixa</span>
+            </div>
+            <button onclick="clearAll()" class="text-[10px] md:text-xs font-bold text-rose-500 hover:bg-rose-50 px-3 py-2 rounded-lg transition-all border border-rose-100 uppercase tracking-widest">
+                Limpar
+            </button>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-10">
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-12">
+            <div class="sm:col-span-2 lg:col-span-1 bg-gradient-to-br from-indigo-600 to-indigo-700 p-6 md:p-8 rounded-[2rem] shadow-2xl shadow-indigo-200 text-white relative overflow-hidden">
+                <div class="relative z-10">
+                    <p class="text-indigo-100 text-xs font-semibold mb-1 opacity-80 uppercase tracking-wider">Saldo</p>
+                    <h2 id="total-balance" class="text-3xl md:text-4xl font-800 tracking-tight">R$ 0,00</h2>
+                </div>
+                <svg class="absolute -right-4 -bottom-4 w-24 h-24 text-indigo-500 opacity-20" fill="currentColor" viewBox="0 0 20 20"><path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"/><path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"/></svg>
+            </div>
+            
+            <div class="bg-white p-6 md:p-8 rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-50 flex items-center gap-4">
+                <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+                </div>
+                <div>
+                    <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Receitas</p>
+                    <h2 id="total-income" class="text-xl md:text-2xl font-bold text-emerald-600">R$ 0,00</h2>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 md:p-8 rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-50 flex items-center gap-4">
+                <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+                </div>
+                <div>
+                    <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Despesas</p>
+                    <h2 id="total-expense" class="text-xl md:text-2xl font-bold text-rose-600">R$ 0,00</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-8 lg:gap-10 items-start">
+            
+            <aside class="w-full lg:w-1/3 space-y-6 lg:sticky lg:top-28">
+                <div class="bg-white p-6 md:p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/60 border border-slate-50">
+                    <h3 class="text-xl font-800 mb-6 text-slate-800">Novo Lançamento</h3>
+                    <form id="finance-form" class="space-y-5">
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Descrição</label>
+                            <input type="text" id="desc" placeholder="Ex: Venda de Produto" class="w-full px-5 py-4 bg-slate-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-indigo-500 outline-none transition-all font-medium text-sm" required>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Valor</label>
+                            <div class="relative">
+                                <span class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">R$</span>
+                                <input type="number" step="0.01" id="amount" placeholder="0,00" class="w-full pl-12 pr-5 py-4 bg-slate-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-indigo-500 outline-none transition-all font-bold text-lg" required>
+                            </div>
+                        </div>
+                        <div class="flex p-1 bg-slate-100 rounded-2xl">
+                            <label class="flex-1 cursor-pointer">
+                                <input type="radio" name="type" value="income" class="hidden peer" checked>
+                                <div class="text-center py-3 rounded-xl transition-all peer-checked:bg-white peer-checked:text-emerald-600 peer-checked:shadow-sm font-bold text-slate-500 text-xs uppercase tracking-widest">Entrada</div>
+                            </label>
+                            <label class="flex-1 cursor-pointer">
+                                <input type="radio" name="type" value="expense" class="hidden peer">
+                                <div class="text-center py-3 rounded-xl transition-all peer-checked:bg-white peer-checked:text-rose-600 peer-checked:shadow-sm font-bold text-slate-500 text-xs uppercase tracking-widest">Saída</div>
+                            </label>
+                        </div>
+                        <button type="submit" class="w-full bg-slate-900 hover:bg-indigo-600 text-white font-bold py-4 md:py-5 rounded-[1.5rem] shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-3">
+                            Registrar
+                        </button>
+                    </form>
+                </div>
+
+                <div class="bg-blue-600 p-6 md:p-8 rounded-[2.5rem] shadow-xl shadow-blue-200 text-white relative overflow-hidden group">
+                    <div class="relative z-10">
+                        <h4 class="font-800 text-lg mb-2">Apoie este Projeto</h4>
+                        <p class="text-blue-100 text-[11px] leading-relaxed mb-6 font-medium">Apoie nosso projeto para que possamos evoluir e criar uma aplicação útil e GRATUITA para todos.</p>
+                        <a href="https://mpago.la/1rYprSD" target="_blank" class="block w-full bg-white text-blue-600 text-center font-bold py-4 rounded-2xl transition-all hover:bg-blue-50 shadow-md text-sm">
+                            Apoiar via Mercado Pago
+                        </a>
+                    </div>
+                    <svg class="absolute -right-2 -bottom-2 w-20 h-20 text-white opacity-10 group-hover:rotate-12 transition-transform" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" /></svg>
+                </div>
+            </aside>
+
+            <div class="w-full lg:w-2/3">
+                <div class="bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/60 border border-slate-50 overflow-hidden">
+                    <div class="px-6 md:px-8 py-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
+                        <h3 class="text-lg md:text-xl font-800 text-slate-800">Histórico</h3>
+                        <span id="item-count" class="text-[10px] font-bold text-slate-400 bg-white px-3 py-1 rounded-full border border-slate-100 uppercase">0 Movimentações</span>
+                    </div>
+                    <div id="transaction-list" class="divide-y divide-slate-50 min-h-[300px] max-h-[800px] overflow-y-auto">
+                        </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const form = document.getElementById('finance-form');
+        const list = document.getElementById('transaction-list');
+        const balanceEl = document.getElementById('total-balance');
+        const incomeEl = document.getElementById('total-income');
+        const expenseEl = document.getElementById('total-expense');
+        const countEl = document.getElementById('item-count');
+
+        let transactions = JSON.parse(localStorage.getItem('abako_pro_data')) || [];
+
+        function updateUI() {
+            const income = transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + t.amount, 0);
+            const expense = transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0);
+            const total = income - expense;
+
+            balanceEl.innerText = formatCurrency(total);
+            incomeEl.innerText = formatCurrency(income);
+            expenseEl.innerText = formatCurrency(expense);
+            countEl.innerText = `${transactions.length} ${transactions.length === 1 ? 'ITEM' : 'ITENS'}`;
+
+            localStorage.setItem('abako_pro_data', JSON.stringify(transactions));
+            renderTransactions();
+        }
+
+        function formatCurrency(value) {
+            return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function renderTransactions() {
+            if (transactions.length === 0) {
+                list.innerHTML = `
+                    <div class="py-24 flex flex-col items-center justify-center text-slate-300 px-6 text-center">
+                        <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <p class="font-bold uppercase tracking-widest text-[10px]">Nenhum registro encontrado</p>
+                    </div>`;
+                return;
+            }
+
+            list.innerHTML = '';
+            transactions.forEach((t, index) => {
+                const isIncome = t.type === 'income';
+                const div = document.createElement('div');
+                div.className = 'px-6 md:px-8 py-5 flex items-center justify-between transaction-card hover:bg-slate-50/80 transition-all group';
+                div.innerHTML = `
+                    <div class="flex items-center gap-3 md:gap-5 min-w-0">
+                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl shrink-0 flex items-center justify-center ${isIncome ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}">
+                            ${isIncome ? '<svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M7 11l5-5m0 0l5 5m-5-5v12"/></svg>' : '<svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M17 13l-5 5m0 0l-5-5m5 5V6"/></svg>'}
+                        </div>
+                        <div class="truncate">
+                            <p class="font-bold text-slate-700 text-sm md:text-base truncate leading-tight">${t.desc}</p>
+                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter mt-1 opacity-70">${t.date}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 md:gap-8 ml-4">
+                        <span class="font-800 text-sm md:text-lg whitespace-nowrap ${isIncome ? 'text-emerald-600' : 'text-rose-600'}">
+                            ${isIncome ? '+' : '-'} ${formatCurrency(t.amount)}
+                        </span>
+                        <button onclick="removeTransaction(${index})" class="delete-btn opacity-0 p-2 text-slate-300 hover:text-rose-500 transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                        </button>
+                    </div>`;
+                list.appendChild(div);
+            });
+        }
+
+        function removeTransaction(index) {
+            transactions.splice(index, 1);
+            updateUI();
+        }
+
+        function clearAll() {
+            if(confirm("Deseja apagar todos os registros permanentemente?")) {
+                transactions = [];
+                updateUI();
+            }
+        }
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const desc = document.getElementById('desc').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const type = document.querySelector('input[name="type"]:checked').value;
+            const date = new Date().toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+
+            transactions.unshift({ desc, amount, type, date });
+            form.reset();
+            updateUI();
+        });
+
+        updateUI();
+    </script>
+</body>
+</html>
